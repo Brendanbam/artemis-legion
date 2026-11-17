@@ -39,6 +39,7 @@ import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.legion.LegionScreen;
+import com.limelight.legion.LegionSession;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.profiles.ProfilesManager;
 import com.limelight.ui.ExternalControllerView;
@@ -444,6 +445,11 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         }
 
 
+        // Artemis Legion: follow the TV / glasses being plugged in or unplugged mid-game
+        if (!prefConfig.enableFullExDisplay) {
+            registerLegionScreenSwitching(currentDisplay.getDisplayId());
+        }
+
         // Artemis Legion: size the bitrate to the resolution/frame rate actually being streamed
         if (prefConfig.legionAutoBitrate) {
             prefConfig.bitrate = LegionScreen.autoBitrateKbps(
@@ -584,6 +590,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         httpsPort = Game.this.getIntent().getIntExtra(EXTRA_HTTPS_PORT, 0); // 0 is treated as unknown
         appUUID = Game.this.getIntent().getStringExtra(EXTRA_APP_UUID);
         appId = Game.this.getIntent().getIntExtra(EXTRA_APP_ID, StreamConfiguration.INVALID_APP_ID);
+        // Artemis Legion: remember this stream for the one-tap "Play PC" tile
+        LegionSession.saveLastStream(this, getIntent());
         uniqueId = Game.this.getIntent().getStringExtra(EXTRA_UNIQUEID);
         vDisplay = Game.this.getIntent().getBooleanExtra(EXTRA_VDISPLAY, false);
         serverCommands = Game.this.getIntent().getStringArrayListExtra(EXTRA_SERVER_COMMANDS);
@@ -1021,6 +1029,53 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             // No need for alpha changes since the color indicates the state
             overlayToggleButton.setAlpha(1.0f);
         }
+    }
+
+    // ---- Artemis Legion: switch screens mid-game ----
+    private DisplayManager.DisplayListener legionDisplayListener;
+    private boolean legionSwitching = false;
+
+    private void registerLegionScreenSwitching(final int streamDisplayId) {
+        final DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        legionDisplayListener = new DisplayManager.DisplayListener() {
+            @Override
+            public void onDisplayAdded(int displayId) {
+                // Streaming on the tablet and a TV / glasses was plugged in: move the stream there.
+                // Short delay lets Legion Switch Dock set the screen's mode and open its hub first.
+                if (streamDisplayId != Display.DEFAULT_DISPLAY) return;
+                timerHandler.postDelayed(() -> {
+                    Display added = dm.getDisplay(displayId);
+                    if (LegionSession.isExternalScreen(added)) {
+                        legionSwitchTo(displayId);
+                    }
+                }, 1500);
+            }
+
+            @Override
+            public void onDisplayRemoved(int displayId) {
+                // The TV / glasses we were streaming on was unplugged: carry on on the tablet
+                // (or on another external screen if one is still connected).
+                if (displayId != streamDisplayId) return;
+                Display other = LegionSession.findExternalScreen(Game.this);
+                legionSwitchTo(other != null ? other.getDisplayId() : Display.DEFAULT_DISPLAY);
+            }
+
+            @Override
+            public void onDisplayChanged(int displayId) {
+            }
+        };
+        dm.registerDisplayListener(legionDisplayListener, timerHandler);
+    }
+
+    private void legionSwitchTo(int targetDisplayId) {
+        if (legionSwitching || isFinishing()) return;
+        legionSwitching = true;
+        Toast.makeText(getApplicationContext(),
+                targetDisplayId == Display.DEFAULT_DISPLAY ? "Moving stream to the tablet…" : "Moving stream to the new screen…",
+                Toast.LENGTH_SHORT).show();
+        // Closing the stream leaves the game running on the PC; the new stream picks it back up
+        LegionSession.relaunchOn(this, getIntent(), targetDisplayId);
+        finish();
     }
 
     private void listenForExternalDisplayRemoval() {
@@ -1718,6 +1773,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         super.onDestroy();
         // Artemis Legion: back to the normally selected profile once the stream closes
         ProfilesManager.getInstance().setScreenProfileOverride(null);
+        if (legionDisplayListener != null) {
+            ((DisplayManager) getSystemService(Context.DISPLAY_SERVICE)).unregisterDisplayListener(legionDisplayListener);
+            legionDisplayListener = null;
+        }
 
         instance = null;
         timerHandler.removeCallbacksAndMessages(null);
