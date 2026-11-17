@@ -29,11 +29,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
+      # Use the Android SDK preinstalled on GitHub's runner
       - name: Install NDK
-        run: sdkmanager --install "ndk;27.0.12077973" > /dev/null
+        run: |
+          SDKM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -n1)
+          echo "Using $SDKM"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" --install "ndk;27.0.12077973" > /dev/null
 
       # The keystore in signing/ is encrypted; it is only usable with the LEGION_KEYSTORE_PASSWORD secret
       - name: Use signing key
