@@ -13,6 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       LEGION_BUILD: ${{ github.run_number }}
       HAS_KEY: ${{ secrets.LEGION_KEYSTORE_PASSWORD != '' }}
@@ -31,11 +32,13 @@ jobs:
 
       # Use the Android SDK preinstalled on GitHub's runner
       - name: Install NDK
+        timeout-minutes: 8
         run: |
           SDKM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -n1)
           echo "Using $SDKM"
           yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" --install "ndk;27.0.12077973" > /dev/null
+          if [ -d "$ANDROID_HOME/ndk/27.0.12077973" ]; then echo "NDK already installed"; exit 0; fi
+          yes | "$SDKM" --install "ndk;27.0.12077973" > /dev/null
 
       # The keystore in signing/ is encrypted; it is only usable with the LEGION_KEYSTORE_PASSWORD secret
       - name: Use signing key
