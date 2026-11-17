@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LEGION_BUILD: ${{ github.run_number }}
-      HAS_KEY: ${{ secrets.LEGION_KEYSTORE_BASE64 != '' }}
+      HAS_KEY: ${{ secrets.LEGION_KEYSTORE_PASSWORD != '' }}
 
     steps:
       - name: Checkout (with moonlight-common-c submodules)
@@ -35,19 +35,16 @@ jobs:
       - name: Install NDK
         run: sdkmanager --install "ndk;27.0.12077973" > /dev/null
 
-      - name: Restore signing key
+      # The keystore in signing/ is encrypted; it is only usable with the LEGION_KEYSTORE_PASSWORD secret
+      - name: Use signing key
         if: env.HAS_KEY == 'true'
-        env:
-          KEYSTORE_B64: ${{ secrets.LEGION_KEYSTORE_BASE64 }}
-        run: |
-          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/legion.jks"
-          echo "LEGION_KEYSTORE_PATH=$RUNNER_TEMP/legion.jks" >> "$GITHUB_ENV"
+        run: echo "LEGION_KEYSTORE_PATH=$GITHUB_WORKSPACE/signing/legion-release.p12" >> "$GITHUB_ENV"
 
       - name: Build release APK
         env:
           LEGION_KEYSTORE_PASSWORD: ${{ secrets.LEGION_KEYSTORE_PASSWORD }}
-          LEGION_KEY_ALIAS: ${{ secrets.LEGION_KEY_ALIAS }}
-          LEGION_KEY_PASSWORD: ${{ secrets.LEGION_KEY_PASSWORD }}
+          LEGION_KEY_ALIAS: legion
+          LEGION_KEY_PASSWORD: ${{ secrets.LEGION_KEYSTORE_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew assembleNonRoot_gameRelease -PlegionBuild=${LEGION_BUILD} --stacktrace
