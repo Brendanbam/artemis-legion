@@ -37,7 +37,9 @@ public final class LegionDefaults {
         e.putBoolean("checkbox_use_virtual_display", true);
 
         // Tablet screen: native 16:10 look, capped at 2560 wide and 120 fps to keep decode + Wi-Fi comfortable
-        Display display = activity.getWindowManager().getDefaultDisplay();
+        // Always size this from the tablet's own screen, even if Artemis was first opened on the TV/glasses
+        android.hardware.display.DisplayManager dm = activity.getSystemService(android.hardware.display.DisplayManager.class);
+        Display display = dm != null ? dm.getDisplay(Display.DEFAULT_DISPLAY) : null;
         if (display != null) {
             Display.Mode mode = display.getMode();
             int w = Math.max(mode.getPhysicalWidth(), mode.getPhysicalHeight());

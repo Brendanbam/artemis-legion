@@ -1190,7 +1190,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     }
 
     public void toggleFullKeyboard() {
-        if (isOnExternalDisplay()) {
+        if (usesExternalControlScreen()) {
             ExternalDisplayControlActivity.toggleFullKeyboard();
             return;
         }
@@ -1520,6 +1520,15 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
     public boolean isOnExternalDisplay() {
         return onExternelDisplay;
+    }
+
+    /**
+     * Artemis Legion: true only when Artemis' own tablet touchpad screen is driving this stream.
+     * When Legion Switch Dock opens the stream on the TV/glasses there is no touchpad screen, so
+     * menus and keyboards must open on the stream itself.
+     */
+    private boolean usesExternalControlScreen() {
+        return onExternelDisplay && ExternalDisplayControlActivity.instance != null;
     }
 
     private float prepareDisplayForRendering(Display currentDisplay) {
@@ -2476,7 +2485,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
     @Override
     public void toggleKeyboard() {
-        if (isOnExternalDisplay()) {
+        if (usesExternalControlScreen()) {
             ExternalDisplayControlActivity.toggleKeyboard();
         } else {
             LimeLog.info("Toggling keyboard overlay");
@@ -4319,7 +4328,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
     @Override
     public void showGameMenu(GameInputDevice device) {
-        if(isOnExternalDisplay()) {
+        if (usesExternalControlScreen()) {
             ExternalDisplayControlActivity.toggleGameMenu();
         } else {
             if (gameMenuCallbacks != null) {
