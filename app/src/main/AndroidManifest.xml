@@ -127,6 +127,15 @@
                 <data android:pathPattern=".*\.art" />
             </intent-filter>
         </activity>
+        <!-- Artemis Legion: one-tap "Play PC" (opened by Legion Switch Dock) -->
+        <activity
+            android:name=".legion.LegionPlayActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:resizeableActivity="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <activity
             android:name=".AppView"
             android:resizeableActivity="true"

@@ -148,6 +148,8 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         }
 
         // Set default preferences if we've never been run
+        // Artemis Legion: one-time best settings (AV1, 100 Mbps, lowest latency, Apollo virtual display)
+        com.limelight.legion.LegionDefaults.applyOnce(this);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Set the correct layout for the PC grid
