@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_legion">Artemis Legion – Auto Screen Settings</string>
+    <string name="title_legion_info">How it works</string>
+    <string name="summary_legion_info">On a TV or XR glasses the stream automatically matches that screen\'s resolution and refresh rate. To customise each screen, create settings profiles named \"TV\", \"Glasses\" or \"Tablet\" – they switch on by themselves when you stream on that screen.</string>
+    <string name="title_legion_auto_bitrate">Auto bitrate for each screen</string>
+    <string name="summary_legion_auto_bitrate">Sets the bitrate from the resolution and frame rate being streamed (overrides the bitrate slider)</string>
+    <string name="title_legion_quality">Picture quality</string>
+    <string name="summary_legion_quality">How much extra bitrate to use. High is best for most home Wi-Fi 6/7 networks</string>
+    <string-array name="legion_quality_names">
+        <item>Balanced (Moonlight default)</item>
+        <item>High (recommended)</item>
+        <item>Maximum (fast Wi-Fi only)</item>
+    </string-array>
+    <string-array name="legion_quality_values" translatable="false">
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+    </string-array>
+</resources>

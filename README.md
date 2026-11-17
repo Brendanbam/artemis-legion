@@ -1,3 +1,18 @@
+# Artemis Legion
+
+A personal build of [Artemis](https://github.com/ClassicOldSong/moonlight-android) (by ClassicOldSong, GPLv3) tuned for a Lenovo Legion Y700 streaming from an Apollo/Vibepollo host to a TV dock or XR glasses, alongside [Legion Switch Dock](https://github.com/Brendanbam/LegionSwitchDock).
+
+## What's different
+- **Matches the screen it's on.** When Artemis Legion is opened on the TV or XR glasses (e.g. from the Legion Switch Dock hub), the stream uses that screen's resolution and refresh rate, and Apollo's virtual display follows automatically. (Upstream only did this when Artemis itself moved the stream to a second screen.)
+- **Auto bitrate per screen.** Bitrate is sized to the resolution/frame rate actually being streamed, with a Picture Quality setting (Balanced / High / Maximum).
+- **Per-screen profiles.** Create Artemis settings profiles named `TV`, `Glasses` or `Tablet` and they switch on automatically on that screen.
+- Installs **next to** the official Artemis (`com.limelight.legion`), so you can keep both.
+
+## Install / updates
+Add `https://github.com/Brendanbam/artemis-legion` to Obtainium (enable pre-releases not needed). Each push to `main` publishes a signed arm64 release.
+
+---
+
 # Artemis Android
 
 Previously named Moonlight Noir

@@ -5,6 +5,33 @@
     app:iconSpaceReserved="false">
 
     <PreferenceCategory
+        android:key="category_legion"
+        android:title="@string/category_legion"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:key="pref_legion_info"
+            android:selectable="false"
+            android:summary="@string/summary_legion_info"
+            android:title="@string/title_legion_info"
+            app:iconSpaceReserved="false" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="checkbox_legion_auto_bitrate"
+            android:summary="@string/summary_legion_auto_bitrate"
+            android:title="@string/title_legion_auto_bitrate"
+            app:iconSpaceReserved="false" />
+        <ListPreference
+            android:defaultValue="150"
+            android:dependency="checkbox_legion_auto_bitrate"
+            android:entries="@array/legion_quality_names"
+            android:entryValues="@array/legion_quality_values"
+            android:key="list_legion_quality"
+            android:summary="@string/summary_legion_quality"
+            android:title="@string/title_legion_quality"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_video_settings"
         android:title="@string/category_video_settings"
         app:initialExpandedChildrenCount="3"

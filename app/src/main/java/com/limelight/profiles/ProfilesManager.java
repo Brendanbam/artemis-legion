@@ -162,7 +162,29 @@ public class ProfilesManager {
     }
 
     public SettingsProfile getActive() {
+        // Artemis Legion: a profile named after the current screen (TV / Glasses / Tablet) wins while streaming
+        SettingsProfile screenProfile = findByName(screenProfileOverride);
+        if (screenProfile != null) {
+            return screenProfile;
+        }
         return activeProfileId == null ? null : profiles.get(activeProfileId);
+    }
+
+    // Artemis Legion: name of the per-screen profile to use during the current stream (null = normal behaviour)
+    private volatile String screenProfileOverride;
+
+    public void setScreenProfileOverride(String profileName) {
+        screenProfileOverride = profileName;
+    }
+
+    public SettingsProfile findByName(String name) {
+        if (name == null) return null;
+        for (SettingsProfile p : profiles.values()) {
+            if (p.getName() != null && p.getName().trim().equalsIgnoreCase(name)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     @NonNull

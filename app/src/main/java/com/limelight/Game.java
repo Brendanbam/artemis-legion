@@ -38,6 +38,7 @@ import com.limelight.nvstream.input.KeyboardPacket;
 import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.preferences.GlPreferences;
+import com.limelight.legion.LegionScreen;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.profiles.ProfilesManager;
 import com.limelight.ui.ExternalControllerView;
@@ -297,6 +298,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     public boolean isInputOnly = true;
     public boolean allowChangeMouseMode = true;
     private boolean onExternelDisplay = false;
+    private LegionScreen.Type legionScreenType = LegionScreen.Type.TABLET;
     private ImageButton floatingMenuButton;
     private ImageButton overlayToggleButton;
     private float floatingButtonDX, floatingButtonDY;
@@ -350,6 +352,12 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         // We don't want a title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        // Artemis Legion: figure out which screen we're streaming to (tablet, TV or XR glasses)
+        // and use its settings profile ("Tablet" / "TV" / "Glasses") if one exists
+        Display legionDisplay = LegionScreen.resolveDisplay(this, getIntent(), EXTRA_DISPLAY_ID);
+        legionScreenType = LegionScreen.classify(legionDisplay);
+        ProfilesManager.getInstance().setScreenProfileOverride(legionScreenType.profileName);
+
         // Read the stream preferences
         prefConfig = PreferenceConfiguration.readPreferences(this);
         tombstonePrefs = Game.this.getSharedPreferences("DecoderTombstone", 0);
@@ -384,11 +392,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 getResources().getString(R.string.conn_establishing_msg), true);
 
 
-        Display currentDisplay = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int displayId = getIntent().getIntExtra(EXTRA_DISPLAY_ID, Display.DEFAULT_DISPLAY);
-            currentDisplay = getSystemService(DisplayManager.class).getDisplay(displayId);
-        }
+        // Artemis Legion: use the display we're actually on (not just an explicit display ID), so
+        // launching Artemis on the TV / glasses from Legion Switch Dock matches that screen
+        Display currentDisplay = legionDisplay;
 
         if (currentDisplay == null) {
             currentDisplay = getWindowManager().getDefaultDisplay();
@@ -414,6 +420,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             prefConfig.enablePip = false;
             currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
+            LimeLog.info("Artemis Legion: " + legionScreenType + " (" + currentDisplay.getName() + ") -> "
+                    + displayWidth + "x" + displayHeight + "@" + prefConfig.fps);
         } else {
             if (prefConfig.renderMode != 0) {
                 prefConfig.videoScaleMode = PreferenceConfiguration.ScaleMode.STRETCH;
@@ -435,6 +443,13 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             setPreferredOrientationForActivity();
         }
 
+
+        // Artemis Legion: size the bitrate to the resolution/frame rate actually being streamed
+        if (prefConfig.legionAutoBitrate) {
+            prefConfig.bitrate = LegionScreen.autoBitrateKbps(
+                    prefConfig.width, prefConfig.height, prefConfig.fps, prefConfig.legionQualityPercent);
+            LimeLog.info("Artemis Legion: auto bitrate " + prefConfig.bitrate + " kbps");
+        }
 
         if (
                 prefConfig.videoScaleMode == PreferenceConfiguration.ScaleMode.STRETCH ||
@@ -1701,6 +1716,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Artemis Legion: back to the normally selected profile once the stream closes
+        ProfilesManager.getInstance().setScreenProfileOverride(null);
 
         instance = null;
         timerHandler.removeCallbacksAndMessages(null);
