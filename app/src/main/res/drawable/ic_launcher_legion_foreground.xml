@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Artemis Legion launcher icon: the Artemis wheel in the Legion Switch Dock colors -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#FF00E5FF" android:strokeWidth="5" android:pathData="M54,28.5 A25.5,25.5 0 1 1 53.99,28.5 Z" />
+    <path android:strokeColor="#FF00E5FF" android:strokeWidth="2.6" android:strokeLineCap="round" android:pathData="M61.85,57.25 L75.25,62.80 M57.25,61.85 L62.80,75.25 M50.75,61.85 L45.20,75.25 M46.15,57.25 L32.75,62.80 M46.15,50.75 L32.75,45.20 M50.75,46.15 L45.20,32.75 M57.25,46.15 L62.80,32.75 M61.85,50.75 L75.25,45.20" />
+    <path android:fillColor="#FF8B6CFF" android:pathData="M45.5,54 A8.5,8.5 0 1 1 62.5,54 A8.5,8.5 0 1 1 45.5,54 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M51.5,49.8 L59,54 L51.5,58.2 Z" />
+</vector>
