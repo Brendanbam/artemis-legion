@@ -729,4 +729,9 @@
 
     <string name="title_checkbox_full_screen">Enable Full Screen</string>
     <string name="summary_checkbox_full_screen">Hide system bars with immersive mode</string>
+    <!-- Artemis Legion: DualSense touchpad mode -->
+    <string name="legion_menu_touchpad_mouse">Touchpad: Mouse cursor (switch to controller)</string>
+    <string name="legion_menu_touchpad_controller">Touchpad: Controller (switch to mouse cursor)</string>
+    <string name="legion_touchpad_now_mouse">Touchpad now moves the mouse cursor</string>
+    <string name="legion_touchpad_now_controller">Touchpad now works as the controller touchpad</string>
 </resources>

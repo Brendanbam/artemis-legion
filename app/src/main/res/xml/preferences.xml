@@ -320,7 +320,7 @@
             android:title="@string/title_checkbox_flip_face_buttons"
             app:iconSpaceReserved="false" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="checkbox_gamepad_touchpad_as_mouse"
             android:summary="@string/summary_checkbox_gamepad_touchpad_as_mouse"
             android:title="@string/title_checkbox_gamepad_touchpad_as_mouse"

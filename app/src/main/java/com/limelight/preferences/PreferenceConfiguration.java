@@ -184,7 +184,8 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_ENABLE_AUDIO_FX = false;
     private static final boolean DEFAULT_REDUCE_REFRESH_RATE = false;
     private static final boolean DEFAULT_FULL_RANGE = false;
-    private static final boolean DEFAULT_GAMEPAD_TOUCHPAD_AS_MOUSE = false;
+    // Artemis Legion: the DualSense touchpad drives the PC's mouse cursor by default
+    private static final boolean DEFAULT_GAMEPAD_TOUCHPAD_AS_MOUSE = true;
     private static final boolean DEFAULT_GAMEPAD_MOTION_SENSORS = true;
     private static final boolean DEFAULT_GAMEPAD_MOTION_FALLBACK = false;
     private static final boolean DEFAULT_FORCE_MOTION_SENSORS_FALLBACK = false;

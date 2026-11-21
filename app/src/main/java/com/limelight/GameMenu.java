@@ -317,6 +317,12 @@ public class GameMenu implements Game.GameMenuCallbacks {
         options.add(new MenuOption(getString(R.string.game_menu_toggle_keyboard), true,
                 game::toggleKeyboard));
 
+        // Artemis Legion: DualSense touchpad as mouse cursor or as the controller's touchpad
+        options.add(new MenuOption(getString(game.isTouchpadMouse()
+                ? R.string.legion_menu_touchpad_mouse
+                : R.string.legion_menu_touchpad_controller), true,
+                game::toggleTouchpadMouse));
+
         options.add(new MenuOption(getString(game.isZoomModeEnabled() ? R.string.game_menu_disable_zoom_mode : R.string.game_menu_enable_zoom_mode), true,
                 game::toggleZoomMode));
 

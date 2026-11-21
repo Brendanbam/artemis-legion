@@ -4277,6 +4277,22 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         updateZoomButtonAppearance();
     }
 
+    /** Artemis Legion: whether the DualSense touchpad moves the PC's mouse cursor (true) or acts as the controller's touchpad. */
+    public boolean isTouchpadMouse() {
+        return prefConfig.gamepadTouchpadAsMouse;
+    }
+
+    /** Artemis Legion: switch the DualSense touchpad between mouse cursor and controller touchpad, and remember it. */
+    public void toggleTouchpadMouse() {
+        prefConfig.gamepadTouchpadAsMouse = !prefConfig.gamepadTouchpadAsMouse;
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putBoolean("checkbox_gamepad_touchpad_as_mouse", prefConfig.gamepadTouchpadAsMouse)
+                .apply();
+        Toast.makeText(this, prefConfig.gamepadTouchpadAsMouse
+                ? R.string.legion_touchpad_now_mouse
+                : R.string.legion_touchpad_now_controller, Toast.LENGTH_SHORT).show();
+    }
+
     public void toggleHUD() {
         prefConfig.enablePerfOverlay = !prefConfig.enablePerfOverlay;
         if (prefConfig.enablePerfOverlay) {
